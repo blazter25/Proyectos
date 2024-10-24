@@ -1,0 +1,16 @@
+C:\Users\Lenovo\source\repos\proy1\proy1\bin\Debug\net8.0-windows\proy1.exe
+C:\Users\Lenovo\source\repos\proy1\proy1\bin\Debug\net8.0-windows\proy1.deps.json
+C:\Users\Lenovo\source\repos\proy1\proy1\bin\Debug\net8.0-windows\proy1.runtimeconfig.json
+C:\Users\Lenovo\source\repos\proy1\proy1\bin\Debug\net8.0-windows\proy1.dll
+C:\Users\Lenovo\source\repos\proy1\proy1\bin\Debug\net8.0-windows\proy1.pdb
+C:\Users\Lenovo\source\repos\proy1\proy1\obj\Debug\net8.0-windows\proy1.Form1.resources
+C:\Users\Lenovo\source\repos\proy1\proy1\obj\Debug\net8.0-windows\proy1.csproj.GenerateResource.cache
+C:\Users\Lenovo\source\repos\proy1\proy1\obj\Debug\net8.0-windows\proy1.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Lenovo\source\repos\proy1\proy1\obj\Debug\net8.0-windows\proy1.AssemblyInfoInputs.cache
+C:\Users\Lenovo\source\repos\proy1\proy1\obj\Debug\net8.0-windows\proy1.AssemblyInfo.cs
+C:\Users\Lenovo\source\repos\proy1\proy1\obj\Debug\net8.0-windows\proy1.csproj.CoreCompileInputs.cache
+C:\Users\Lenovo\source\repos\proy1\proy1\obj\Debug\net8.0-windows\proy1.dll
+C:\Users\Lenovo\source\repos\proy1\proy1\obj\Debug\net8.0-windows\refint\proy1.dll
+C:\Users\Lenovo\source\repos\proy1\proy1\obj\Debug\net8.0-windows\proy1.pdb
+C:\Users\Lenovo\source\repos\proy1\proy1\obj\Debug\net8.0-windows\proy1.genruntimeconfig.cache
+C:\Users\Lenovo\source\repos\proy1\proy1\obj\Debug\net8.0-windows\ref\proy1.dll
