@@ -1,0 +1,66 @@
+por IDOR
+
+
+// Diccionario de rutas que un administrador o desarrollador suele dejar expuestas
+const rutasOcultas = [
+    "/admin", "/v1/api", "/config", "/backup.sql", "/.env", 
+    "/api/users", "/dashboard", "/phpmyadmin", "/wp-admin", "/test"
+];
+
+async function buscarRutasOcultas() {
+    console.log("🔍 Escaneando directorios del proyecto...");
+
+    for (let ruta of rutasOcultas) {
+        // Construimos la URL completa basada en tu dominio actual
+        const urlObjetivo = window.location.origin + ruta;
+
+        try {
+            const respuesta = await fetch(urlObjetivo, { method: 'GET' });
+
+            // Si devuelve 200 (Existe) o 403 (Existe pero no hay permiso), la ruta está ahí.
+            if (respuesta.status === 200) {
+                console.log(`%c[¡ENCONTRADO (200)!] Ruta expuesta: ${urlObjetivo}`, 'background: #222; color: #00ff00; font-size: 14px;');
+            } else if (respuesta.status === 403) {
+                console.log(`%c[AVISO (403)] La ruta existe pero está restringida: ${urlObjetivo}`, 'color: #ffcc00;');
+            }
+        } catch (error) {
+            // Ignoramos errores de conexión
+        }
+    }
+    console.log("🏁 Escaneo de rutas finalizado.");
+}
+
+buscarRutasOcultas();
+
+// busqueda de la ruta
+
+// Diccionario de rutas que un administrador o desarrollador suele dejar expuestas
+const rutasOcultas = [
+    "/admin", "/v1/api", "/config", "/backup.sql", "/.env", 
+    "/api/users", "/dashboard", "/phpmyadmin", "/wp-admin", "/test"
+];
+
+async function buscarRutasOcultas() {
+    console.log("🔍 Escaneando directorios del proyecto...");
+
+    for (let ruta of rutasOcultas) {
+        // Construimos la URL completa basada en tu dominio actual
+        const urlObjetivo = window.location.origin + ruta;
+
+        try {
+            const respuesta = await fetch(urlObjetivo, { method: 'GET' });
+
+            // Si devuelve 200 (Existe) o 403 (Existe pero no hay permiso), la ruta está ahí.
+            if (respuesta.status === 200) {
+                console.log(`%c[¡ENCONTRADO (200)!] Ruta expuesta: ${urlObjetivo}`, 'background: #222; color: #00ff00; font-size: 14px;');
+            } else if (respuesta.status === 403) {
+                console.log(`%c[AVISO (403)] La ruta existe pero está restringida: ${urlObjetivo}`, 'color: #ffcc00;');
+            }
+        } catch (error) {
+            // Ignoramos errores de conexión
+        }
+    }
+    console.log("🏁 Escaneo de rutas finalizado.");
+}
+
+buscarRutasOcultas();
